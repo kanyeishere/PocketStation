@@ -64,8 +64,7 @@ public sealed class Plugin : IDalamudPlugin
         chatMonitor = new ChatMonitorModule(configuration, eventBus, game);
         playerState = new PlayerStateModule(configuration, eventBus, game, Framework);
         commandDispatcher = new CommandDispatcher(configuration, eventBus, game, screenshotModule);
-        commandDispatcher.OnTogglePlugin = (internalName, enable) =>
-            DalamudReflector.SetPluginStateAsync(internalName, enable);
+        commandDispatcher.OnTogglePlugin = PluginStateManager.SetPluginStateAsync;
 
         moduleHost = new PocketModuleHost();
         moduleHost.Add(chatMonitor);
