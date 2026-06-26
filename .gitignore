@@ -57,6 +57,9 @@ reasonix.toml
 OmenTools/bin/
 OmenTools/obj/
 
+# But keep lib/ — committed Dalamud reference DLLs for CI
+!lib/
+
 # Publish/package output
 publish/
 Release/

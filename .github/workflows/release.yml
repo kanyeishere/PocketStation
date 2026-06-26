@@ -17,6 +17,9 @@ jobs:
       run:
         shell: pwsh
 
+    env:
+      DALAMUD_HOME: ${{ github.workspace }}\lib
+
     steps:
       - name: Checkout with submodules
         uses: actions/checkout@v4
@@ -26,25 +29,19 @@ jobs:
 
       - name: Update version from tag
         run: |
-          # Extract version from tag (strip leading 'v')
           $tag = "${{ github.ref_name }}"
           $version = $tag -replace '^v', ''
           Write-Host "Tag: $tag → Version: $version"
 
-          # Update pluginmaster.json
           $pm = Get-Content -Raw "pluginmaster.json" | ConvertFrom-Json
           $pm[0].AssemblyVersion = $version
           $pm[0].TestingAssemblyVersion = $version
           $pm | ConvertTo-Json | Set-Content "pluginmaster.json"
-          Write-Host "pluginmaster.json version updated"
 
-          # Update PocketStation.json (Dalamud manifest)
           $ps = Get-Content -Raw "PocketStation.json" | ConvertFrom-Json
           $ps.AssemblyVersion = $version
           $ps | ConvertTo-Json | Set-Content "PocketStation.json"
-          Write-Host "PocketStation.json version updated"
 
-          # Commit and push back to repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pluginmaster.json PocketStation.json
@@ -69,52 +66,12 @@ jobs:
           npm ci
           npm run build
 
-      - name: Download Dalamud CN Dev DLLs
-        run: |
-          $dalamudDir = "$env:APPDATA\XIVLauncherCN\addon\Hooks\dev"
-          New-Item -ItemType Directory -Force -Path $dalamudDir
-          Invoke-WebRequest -Uri "https://ottercorp.github.io/dalamud-distrib/stg/latest.zip" -OutFile "$env:TEMP\dalamud.zip"
-          Expand-Archive -Force "$env:TEMP\dalamud.zip" -DestinationPath $dalamudDir
-
-      - name: Upgrade Lumina.Excel for OmenTools compatibility
-        run: |
-          $dalamudDir = "$env:APPDATA\XIVLauncherCN\addon\Hooks\dev"
-          $nugetCache = "$HOME\.nuget\packages\lumina.excel"
-
-          # Check if 7.4.3 is already cached
-          $csproj = "$env:TEMP\lumina_fetch\lumina_fetch.csproj"
-          New-Item -ItemType Directory -Force -Path "$env:TEMP\lumina_fetch" | Out-Null
-
-          if (-not (Test-Path "$nugetCache\7.4.3")) {
-            Write-Host "Downloading Lumina.Excel 7.4.3 from NuGet..."
-            @"
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Lumina.Excel" Version="7.4.3" />
-  </ItemGroup>
-</Project>
-"@ | Set-Content $csproj
-            dotnet restore "$csproj" 2>&1 | Out-Null
-          }
-
-          $luminaDll = Get-ChildItem -Recurse "$nugetCache\7.4.3" -Filter "Lumina.Excel.dll" | Select-Object -First 1
-          if ($luminaDll) {
-            Copy-Item $luminaDll.FullName "$dalamudDir\Lumina.Excel.dll" -Force
-            Write-Host "Replaced Lumina.Excel.dll with version 7.4.3 (has Lumina.Excel.Sheets)"
-          } else {
-            Write-Host "WARNING: Could not find Lumina.Excel 7.4.3, using distrib version"
-          }
-
       - name: Build Plugin
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release /p:DalamudDevPath="${{ github.workspace }}\lib"
 
       - name: Package Plugin
         run: |
           Compress-Archive -Path "bin\Release\*" -DestinationPath "latest.zip" -Force
-          # Verify the zip is valid
           if (-not (Test-Path "latest.zip")) { throw "latest.zip was not created!" }
           Write-Host "latest.zip created: $(Get-Item latest.zip | Select-Object Length)"
 
@@ -153,8 +110,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ github.ref_name }}"
-
-          # Determine if a release already exists
           $existing = gh release view "$tag" --json id 2>$null
           if ($existing) {
             Write-Host "Release $tag already exists, uploading additional assets..."
@@ -166,7 +121,6 @@ jobs:
               --latest
           }
 
-          # Upload assets one by one so we can see any failures
           Write-Host "Uploading latest.zip..."
           gh release upload "$tag" "latest.zip" --clobber
 
