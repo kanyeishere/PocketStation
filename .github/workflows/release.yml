@@ -114,14 +114,15 @@ jobs:
           $entry = @{
             Author                 = "Wotou"
             Name                   = "Pocket Station"
-            Punchline              = "Turn your phone into a second screen for FFXIV — chat, player state, screenshots, live streaming & remote commands over LAN."
-            Description            = "Pocket Station runs a local web server inside FFXIV, letting you connect from any phone, tablet, or laptop on the same network. Monitor real-time game chat with custom filters, view player / party / target state (HP, MP, buffs, zone, currencies), capture screenshots or stream your game screen live to your mobile device, and execute whitelisted in-game commands remotely. Also integrates with DailyRoutines to toggle automation modules. Use Tailscale or router port forwarding to access it securely from outside your home network."
+            Punchline              = "把手机变成 FFXIV 自动化的控制终端。"
+            Description            = "Pocket Station 是一个在 FFXIV 中运行的 Web 服务器，让你可以通过同一网络下的手机、平板或笔记本电脑连接。实时监控游戏聊天并支持自定义过滤器，实时串流游戏画面到移动设备，以及远程执行游戏指令。使用 Tailscale 或路由器端口转发，也可在外网安全访问。"
             InternalName           = "PocketStation"
             AssemblyVersion        = $version
             TestingAssemblyVersion = $version
             ApplicableVersion      = "any"
             Tags                   = @("chat", "lan", "mobile", "monitor", "screenshot", "live-stream", "remote-control", "second-screen", "web-console")
             DalamudApiLevel        = 15
+            IconUrl                = "https://raw.githubusercontent.com/kanyeishere/PocketStation/main/icon.png"
             RepoUrl                = $repoUrl
             DownloadLinkInstall    = $downloadUrl
             DownloadLinkTesting    = $downloadUrl
