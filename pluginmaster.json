@@ -5,8 +5,8 @@
     "Punchline": "LAN mobile console for chat, player state, commands, and screenshots.",
     "Description": "Runs a local LAN web console for monitoring game chat and player state, sending whitelisted chat commands, and requesting live screenshots.",
     "InternalName": "PocketStation",
-    "AssemblyVersion": "0.1.0.0",
-    "TestingAssemblyVersion": "0.1.0.0",
+    "AssemblyVersion": "0.0.0.3",
+    "TestingAssemblyVersion": "0.0.0.3",
     "ApplicableVersion": "any",
     "Tags": [
       "chat",

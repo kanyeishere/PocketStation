@@ -22,6 +22,34 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          token: ${{ github.token }}
+
+      - name: Update version from tag
+        run: |
+          # Extract version from tag (strip leading 'v')
+          $tag = "${{ github.ref_name }}"
+          $version = $tag -replace '^v', ''
+          Write-Host "Tag: $tag → Version: $version"
+
+          # Update pluginmaster.json
+          $pm = Get-Content -Raw "pluginmaster.json" | ConvertFrom-Json
+          $pm[0].AssemblyVersion = $version
+          $pm[0].TestingAssemblyVersion = $version
+          $pm | ConvertTo-Json | Set-Content "pluginmaster.json"
+          Write-Host "pluginmaster.json version updated"
+
+          # Update PocketStation.json (Dalamud manifest)
+          $ps = Get-Content -Raw "PocketStation.json" | ConvertFrom-Json
+          $ps.AssemblyVersion = $version
+          $ps | ConvertTo-Json | Set-Content "PocketStation.json"
+          Write-Host "PocketStation.json version updated"
+
+          # Commit and push back to repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pluginmaster.json PocketStation.json
+          git commit -m "Bump version to $version [skip ci]"
+          git push
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
@@ -58,33 +86,23 @@ jobs:
           if (-not (Test-Path "latest.zip")) { throw "latest.zip was not created!" }
           Write-Host "latest.zip created: $(Get-Item latest.zip | Select-Object Length)"
 
-      - name: Generate pluginmaster.json
+      - name: Generate pluginmaster_entry.json (release artifact)
         run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag -replace '^v', ''
           $repoUrl = "${{ github.server_url }}/${{ github.repository }}"
           $downloadUrl = "$repoUrl/releases/latest/download/latest.zip"
-          Write-Host "Repo URL : $repoUrl"
-          Write-Host "Download : $downloadUrl"
-
-          # Read version from built assembly
-          $pluginPath = "bin\Release\PocketStation.dll"
-          if (-not (Test-Path $pluginPath)) { throw "DLL not found: $pluginPath" }
-          $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($pluginPath).FileVersion
-          if (-not $version) { throw "Could not read version from DLL" }
-          Write-Host "Assembly version: $version"
-
-          # Read plugin manifest
-          $manifest = Get-Content -Raw "PocketStation.json" | ConvertFrom-Json
 
           $entry = @{
-            Author                 = $manifest.Author
-            Name                   = $manifest.Name
-            Punchline              = $manifest.Punchline
-            Description            = $manifest.Description
-            InternalName           = $manifest.InternalName
+            Author                 = "Yiwei"
+            Name                   = "Pocket Station"
+            Punchline              = "LAN mobile console for chat, player state, commands, and screenshots."
+            Description            = "Runs a local LAN web console for monitoring game chat and player state, sending whitelisted chat commands, and requesting live screenshots."
+            InternalName           = "PocketStation"
             AssemblyVersion        = $version
             TestingAssemblyVersion = $version
-            ApplicableVersion      = $manifest.ApplicableVersion
-            Tags                   = $manifest.Tags
+            ApplicableVersion      = "any"
+            Tags                   = @("chat", "lan", "mobile", "monitor")
             DalamudApiLevel        = 15
             RepoUrl                = $repoUrl
             DownloadLinkInstall    = $downloadUrl
@@ -92,9 +110,7 @@ jobs:
             DownloadLinkUpdate     = $downloadUrl
           }
 
-          # Write JSON
-          $json = $entry | ConvertTo-Json
-          $json | Set-Content "pluginmaster_entry.json"
+          $entry | ConvertTo-Json | Set-Content "pluginmaster_entry.json"
           Write-Host "=== pluginmaster_entry.json ==="
           Get-Content "pluginmaster_entry.json"
 
