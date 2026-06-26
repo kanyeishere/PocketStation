@@ -62,7 +62,7 @@
   <!-- Copy OmenTools transitive dependencies (not covered by CopyLocalLockFileAssemblies=false) -->
   <Target Name="CopyOmenToolsDeps" AfterTargets="Build">
     <PropertyGroup>
-      <_OmenOutDir>$(MSBuildProjectDirectory)\OmenTools\bin\Debug\</_OmenOutDir>
+      <_OmenOutDir>$(MSBuildProjectDirectory)\OmenTools\bin\$(Configuration)\</_OmenOutDir>
     </PropertyGroup>
     <ItemGroup>
       <_OmenToolsDep Include="$(_OmenOutDir)GuerrillaNtp.dll" Condition="Exists('$(_OmenOutDir)GuerrillaNtp.dll')" />
