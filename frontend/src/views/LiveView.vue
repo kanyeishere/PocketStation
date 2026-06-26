@@ -19,6 +19,7 @@ const screenFrame = ref<HTMLDivElement | null>(null);
 const fpsInput = ref(props.fps);
 const isFullscreen = ref(false);
 const isFallbackFullscreen = ref(false);
+const fallbackViewportStyle = ref<Record<string, string>>({});
 let animating = false;
 
 type WebKitFullscreenDocument = Document & {
@@ -33,6 +34,17 @@ type WebKitFullscreenElement = HTMLElement & {
 function getFullscreenElement() {
   const doc = document as WebKitFullscreenDocument;
   return document.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
+}
+
+function isIosDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function waitForAnimationFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
 }
 
 function onFullscreenChange() {
@@ -55,15 +67,22 @@ onUnmounted(() => {
   document.removeEventListener("fullscreenchange", onFullscreenChange);
   document.removeEventListener("webkitfullscreenchange", onFullscreenChange);
   document.removeEventListener("keydown", onKeydown);
+  stopFallbackViewportTracking();
 });
 
 async function requestNativeFullscreen(el: HTMLElement) {
+  if (isIosDevice()) return false;
+
   const fullscreenEl = el as WebKitFullscreenElement;
   const requestFullscreen = fullscreenEl.requestFullscreen ?? fullscreenEl.webkitRequestFullscreen;
   if (!requestFullscreen) return false;
 
   try {
     await requestFullscreen.call(fullscreenEl);
+    await waitForAnimationFrame();
+    await waitForAnimationFrame();
+    if (getFullscreenElement() !== el) return false;
+
     isFallbackFullscreen.value = false;
     isFullscreen.value = true;
     return true;
@@ -80,10 +99,48 @@ async function exitNativeFullscreen() {
   if (!exitFullscreen) return;
 
   try {
-    await exitFullscreen.call(document);
+    await exitFullscreen.call(doc);
   } catch {
     // Browser may reject when fullscreen has already been dismissed.
   }
+}
+
+function updateFallbackViewport() {
+  const viewport = window.visualViewport;
+  fallbackViewportStyle.value = viewport
+    ? {
+        "--live-fallback-left": `${viewport.offsetLeft}px`,
+        "--live-fallback-top": `${viewport.offsetTop}px`,
+        "--live-fallback-width": `${viewport.width}px`,
+        "--live-fallback-height": `${viewport.height}px`
+      }
+    : {};
+}
+
+function startFallbackViewportTracking() {
+  updateFallbackViewport();
+  window.visualViewport?.addEventListener("resize", updateFallbackViewport);
+  window.visualViewport?.addEventListener("scroll", updateFallbackViewport);
+  window.addEventListener("orientationchange", updateFallbackViewport);
+}
+
+function stopFallbackViewportTracking() {
+  window.visualViewport?.removeEventListener("resize", updateFallbackViewport);
+  window.visualViewport?.removeEventListener("scroll", updateFallbackViewport);
+  window.removeEventListener("orientationchange", updateFallbackViewport);
+  fallbackViewportStyle.value = {};
+}
+
+function enterFallbackFullscreen() {
+  isFallbackFullscreen.value = true;
+  startFallbackViewportTracking();
+  onFullscreenChange();
+}
+
+function exitFallbackFullscreen() {
+  isFallbackFullscreen.value = false;
+  stopFallbackViewportTracking();
+  onFullscreenChange();
 }
 
 async function enterFullscreenMode() {
@@ -93,8 +150,7 @@ async function enterFullscreenMode() {
   const enteredNativeFullscreen = await requestNativeFullscreen(el);
   if (enteredNativeFullscreen) return;
 
-  isFallbackFullscreen.value = true;
-  onFullscreenChange();
+  enterFallbackFullscreen();
 }
 
 async function exitFullscreenMode() {
@@ -102,8 +158,7 @@ async function exitFullscreenMode() {
     await exitNativeFullscreen();
   }
 
-  isFallbackFullscreen.value = false;
-  onFullscreenChange();
+  exitFallbackFullscreen();
 }
 
 async function toggleFullscreen() {
@@ -221,6 +276,7 @@ watch(() => props.running, (running) => {
         'is-fallback-fullscreen': isFallbackFullscreen,
         'can-fullscreen': running
       }"
+      :style="isFallbackFullscreen ? fallbackViewportStyle : undefined"
       @click="toggleFullscreen"
     >
       <canvas
@@ -272,11 +328,11 @@ watch(() => props.running, (running) => {
 
 .screen-frame.is-fallback-fullscreen {
   position: fixed;
-  inset: 0;
+  left: var(--live-fallback-left, 0);
+  top: var(--live-fallback-top, 0);
   z-index: 1000;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  width: var(--live-fallback-width, 100vw);
+  height: var(--live-fallback-height, 100vh);
   min-height: 0;
   padding:
     env(safe-area-inset-top)
@@ -290,8 +346,8 @@ watch(() => props.running, (running) => {
 }
 
 .screen-frame.is-fallback-fullscreen .live-canvas {
-  max-width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
-  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-width: calc(var(--live-fallback-width, 100vw) - env(safe-area-inset-left) - env(safe-area-inset-right));
+  max-height: calc(var(--live-fallback-height, 100vh) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
 }
 
 .live-placeholder {
