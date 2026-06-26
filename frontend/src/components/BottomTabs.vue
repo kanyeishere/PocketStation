@@ -5,8 +5,7 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "chat", label: "聊天" },
   { key: "state", label: "状态" },
   { key: "shortcuts", label: "快捷指令" },
-  { key: "live", label: "直播" },
-  { key: "commands", label: "指令" }
+  { key: "live", label: "直播" }
 ];
 
 defineProps<{

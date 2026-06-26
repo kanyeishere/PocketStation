@@ -1,4 +1,4 @@
-export type TabKey = "chat" | "state" | "shortcuts" | "live" | "commands";
+export type TabKey = "chat" | "state" | "shortcuts" | "live";
 export type ConnectionMode = "" | "online" | "offline";
 
 export interface Envelope<TPayload = unknown> {

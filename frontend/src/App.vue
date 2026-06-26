@@ -4,7 +4,6 @@ import BottomTabs from "@/components/BottomTabs.vue";
 import TopBar from "@/components/TopBar.vue";
 import { usePocketStation } from "@/composables/usePocketStation";
 import ChatView from "@/views/ChatView.vue";
-import CommandsView from "@/views/CommandsView.vue";
 import LiveView from "@/views/LiveView.vue";
 import ShortcutsView from "@/views/ShortcutsView.vue";
 import StateView from "@/views/StateView.vue";
@@ -22,7 +21,6 @@ const {
   filteredChats,
   filterModes,
   sendLoading,
-  serverInfo,
   snapshot,
   connectWs,
   deleteCurrentMode,
@@ -63,11 +61,6 @@ watch(activeTab, (tab) => {
     loadDailyRoutines();
   }
 });
-
-function applyCommand(command: string) {
-  chatDraft.value = command;
-  activeTab.value = "chat";
-}
 
 function doSendShortcut(command: string) {
   sendShortcut(command);
@@ -127,12 +120,6 @@ function doSendShortcut(command: string) {
       :frame-size="liveFrameSize"
       @start="startStream"
       @stop="stopStream"
-    />
-
-    <CommandsView
-      :class="{ active: activeTab === 'commands' }"
-      :server-info="serverInfo"
-      @command="applyCommand"
     />
   </main>
 
