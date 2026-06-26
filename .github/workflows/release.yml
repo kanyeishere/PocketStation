@@ -62,7 +62,7 @@ jobs:
           $pm = Get-Content -Raw "pluginmaster.json" | ConvertFrom-Json
           $pm[0].AssemblyVersion = $version
           $pm[0].TestingAssemblyVersion = $version
-          $pm | ConvertTo-Json -Depth 10 | Set-Content "pluginmaster.json"
+          $pm | ConvertTo-Json -Depth 10 -AsArray | Set-Content "pluginmaster.json"
           Write-Host "Updated pluginmaster.json"
 
           # Update PocketStation.json (single plugin manifest)
@@ -128,7 +128,7 @@ jobs:
             DownloadLinkUpdate     = $downloadUrl
           }
 
-          @($entry) | ConvertTo-Json -Depth 10 | Set-Content "pluginmaster.json"
+          @($entry) | ConvertTo-Json -Depth 10 -AsArray | Set-Content "pluginmaster.json"
           Write-Host "=== pluginmaster.json ==="
           Get-Content "pluginmaster.json"
 
