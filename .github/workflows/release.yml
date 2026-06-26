@@ -73,7 +73,7 @@ jobs:
         run: |
           $dalamudDir = "$env:APPDATA\XIVLauncherCN\addon\Hooks\dev"
           New-Item -ItemType Directory -Force -Path $dalamudDir
-          Invoke-WebRequest -Uri "https://ottercorp.github.io/dalamud-distrib/stg/latest.zip" -OutFile "$env:TEMP\dalamud.zip"
+          Invoke-WebRequest -Uri "https://ottercorp.github.io/dalamud-distrib/canary/latest.zip" -OutFile "$env:TEMP\dalamud.zip"
           Expand-Archive -Force "$env:TEMP\dalamud.zip" -DestinationPath $dalamudDir
 
       - name: Build Plugin
