@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="wwwroot/logo.svg" alt="Pocket Station" width="180">
+  <img src="frontend/public/logo.svg" alt="Pocket Station" width="180">
 </p>
 
 <h1 align="center">Pocket Station</h1>
