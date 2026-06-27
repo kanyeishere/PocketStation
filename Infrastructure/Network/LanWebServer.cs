@@ -157,16 +157,27 @@ public sealed class LanWebServer : IDisposable
             return;
         }
 
-        var path = request.Path == "/" ? "/index.html" : request.Path;
-        path = path.Replace('/', Path.DirectorySeparatorChar).TrimStart(Path.DirectorySeparatorChar);
+        var requestPath = request.Path == "/" ? "/index.html" : request.Path;
+        var path = requestPath.Replace('/', Path.DirectorySeparatorChar).TrimStart(Path.DirectorySeparatorChar);
         var fullPath = Path.GetFullPath(Path.Combine(staticRoot, path));
         var root = Path.GetFullPath(staticRoot);
 
         if (!fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase) || !File.Exists(fullPath))
         {
-            await HttpHelpers.WriteResponseAsync(stream, 404, "text/plain; charset=utf-8",
-                Encoding.UTF8.GetBytes("Not Found"), ct).ConfigureAwait(false);
-            return;
+            if (!IsSpaFallbackRequest(request))
+            {
+                await HttpHelpers.WriteResponseAsync(stream, 404, "text/plain; charset=utf-8",
+                    Encoding.UTF8.GetBytes("Not Found"), ct).ConfigureAwait(false);
+                return;
+            }
+
+            fullPath = Path.GetFullPath(Path.Combine(staticRoot, "index.html"));
+            if (!fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase) || !File.Exists(fullPath))
+            {
+                await HttpHelpers.WriteResponseAsync(stream, 404, "text/plain; charset=utf-8",
+                    Encoding.UTF8.GetBytes("Not Found"), ct).ConfigureAwait(false);
+                return;
+            }
         }
 
         await HttpHelpers.WriteResponseAsync(stream, 200,
@@ -185,6 +196,11 @@ public sealed class LanWebServer : IDisposable
         request.Path == "/ws" &&
         request.Headers.TryGetValue("upgrade", out var upgrade) &&
         upgrade.Equals("websocket", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSpaFallbackRequest(HttpRequest request) =>
+        !request.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) &&
+        !request.Path.Equals("/ws", StringComparison.OrdinalIgnoreCase) &&
+        string.IsNullOrEmpty(Path.GetExtension(request.Path));
 
     private static async Task<HttpRequest?> ReadRequestAsync(NetworkStream stream, CancellationToken ct)
     {

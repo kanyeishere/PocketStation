@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import type { CommandShortcut } from "@/types";
 
 const props = defineProps<{
@@ -48,17 +48,30 @@ function removeShortcut(index: number) {
   editList.value.splice(index, 1);
 }
 
-function moveUp(index: number) {
-  if (index <= 0) return;
+function moveShortcut(from: number, to: number) {
   const list = editList.value;
-  [list[index - 1], list[index]] = [list[index], list[index - 1]];
+  if (
+    !Number.isInteger(from)
+    || !Number.isInteger(to)
+    || from === to
+    || from < 0
+    || to < 0
+    || from >= list.length
+    || to >= list.length
+  ) return;
+
+  const [item] = list.splice(from, 1);
+  list.splice(to, 0, item);
+}
+
+function moveUp(index: number) {
+  moveShortcut(index, index - 1);
 }
 
 function moveDown(index: number) {
-  const list = editList.value;
-  if (index >= list.length - 1) return;
-  [list[index + 1], list[index]] = [list[index], list[index + 1]];
+  moveShortcut(index, index + 1);
 }
+
 </script>
 
 <template>
@@ -90,17 +103,38 @@ function moveDown(index: number) {
         :key="s.id"
         class="shortcut-edit-row"
       >
-        <button type="button" class="btn-move" :disabled="i === 0" @click="moveUp(i)">▲</button>
-        <button type="button" class="btn-move" :disabled="i === editList.length - 1" @click="moveDown(i)">▼</button>
+        <div class="move-controls">
+          <button
+            type="button"
+            class="btn-move"
+            :disabled="i === 0"
+            title="上移"
+            aria-label="上移"
+            @click="moveUp(i)"
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            class="btn-move"
+            :disabled="i === editList.length - 1"
+            title="下移"
+            aria-label="下移"
+            @click="moveDown(i)"
+          >
+            ↓
+          </button>
+        </div>
         <input v-model="s.label" placeholder="名称" class="edit-label">
         <input v-model="s.command" placeholder="指令" class="edit-cmd">
-        <button type="button" class="btn-remove" @click="removeShortcut(i)">✕</button>
+        <button type="button" class="btn-remove" title="删除" aria-label="删除" @click="removeShortcut(i)">×</button>
       </div>
 
       <div class="shortcut-edit-row add-row">
+        <div class="move-controls placeholder" aria-hidden="true"></div>
         <input v-model="newLabel" placeholder="新名称" class="edit-label">
         <input v-model="newCommand" placeholder="新指令" class="edit-cmd">
-        <button type="button" class="btn-add" @click="addShortcut">+</button>
+        <button type="button" class="btn-add" title="添加" aria-label="添加" @click="addShortcut">+</button>
       </div>
     </div>
   </section>
@@ -158,13 +192,23 @@ function moveDown(index: number) {
 }
 
 .shortcut-edit-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 34px minmax(96px, 120px) minmax(0, 1fr) 28px;
   gap: 6px;
   align-items: center;
 }
 
+.move-controls {
+  display: grid;
+  grid-template-rows: repeat(2, 18px);
+  gap: 4px;
+  width: 34px;
+}
+
 .edit-label {
-  width: 120px;
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
   padding: 4px 8px;
   border: 1px solid var(--border-color, #555);
   border-radius: 4px;
@@ -174,7 +218,9 @@ function moveDown(index: number) {
 }
 
 .edit-cmd {
-  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
   padding: 4px 8px;
   border: 1px solid var(--border-color, #555);
   border-radius: 4px;
@@ -185,6 +231,8 @@ function moveDown(index: number) {
 }
 
 .btn-remove {
+  width: 28px;
+  min-height: 36px;
   padding: 4px 8px;
   border: none;
   border-radius: 4px;
@@ -195,7 +243,12 @@ function moveDown(index: number) {
 }
 
 .btn-move {
-  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-height: 18px;
+  padding: 0;
   border: 1px solid var(--border-color, #555);
   border-radius: 4px;
   background: transparent;
@@ -216,12 +269,24 @@ function moveDown(index: number) {
 }
 
 .btn-add {
-  padding: 4px 10px;
+  width: 28px;
+  min-height: 36px;
+  padding: 4px 0;
   border: 1px dashed var(--border-color, #555);
   border-radius: 4px;
   background: transparent;
   color: var(--text-color, #eee);
   cursor: pointer;
   font-size: 0.875rem;
+}
+
+@media (max-width: 430px) {
+  .shortcuts-editor {
+    padding: 8px;
+  }
+
+  .shortcut-edit-row {
+    grid-template-columns: 34px minmax(84px, 112px) minmax(0, 1fr) 28px;
+  }
 }
 </style>

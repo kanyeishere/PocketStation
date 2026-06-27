@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import BottomTabs from "@/components/BottomTabs.vue";
 import TopBar from "@/components/TopBar.vue";
 import { usePocketStation } from "@/composables/usePocketStation";
@@ -9,7 +9,38 @@ import ShortcutsView from "@/views/ShortcutsView.vue";
 import StateView from "@/views/StateView.vue";
 import type { TabKey } from "@/types";
 
-const activeTab = ref<TabKey>("chat");
+const tabRoutes: Record<TabKey, string> = {
+  chat: "/",
+  state: "/state",
+  shortcuts: "/shortcuts",
+  live: "/live"
+};
+
+const routeTabs: Record<string, TabKey> = {
+  "/": "chat",
+  "/chat": "chat",
+  "/state": "state",
+  "/shortcuts": "shortcuts",
+  "/live": "live"
+};
+
+function normalizePath(path: string) {
+  return path.replace(/\/+$/, "") || "/";
+}
+
+function tabFromLocation() {
+  return routeTabs[normalizePath(window.location.pathname)] || "chat";
+}
+
+function currentRoute() {
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+function routeForTab(tab: TabKey) {
+  return `${tabRoutes[tab]}${window.location.search}`;
+}
+
+const activeTab = ref<TabKey>(tabFromLocation());
 const chatDraft = ref("");
 const {
   allChatTypes,
@@ -49,18 +80,46 @@ const {
 } = usePocketStation();
 
 onMounted(() => {
+  replaceRoute(activeTab.value);
+  window.addEventListener("popstate", syncTabFromRoute);
   loadInitial();
   loadShortcuts();
   loadDailyRoutines();
+  if (activeTab.value === "state") {
+    loadPlugins();
+  }
   connectWs();
 });
 
+onUnmounted(() => {
+  window.removeEventListener("popstate", syncTabFromRoute);
+});
+
 watch(activeTab, (tab) => {
+  pushRoute(tab);
   if (tab === "state") {
     loadPlugins();
     loadDailyRoutines();
   }
 });
+
+function pushRoute(tab: TabKey) {
+  const route = routeForTab(tab);
+  if (route !== currentRoute()) {
+    window.history.pushState({ tab }, "", route);
+  }
+}
+
+function replaceRoute(tab: TabKey) {
+  const route = routeForTab(tab);
+  if (route !== currentRoute()) {
+    window.history.replaceState({ tab }, "", route);
+  }
+}
+
+function syncTabFromRoute() {
+  activeTab.value = tabFromLocation();
+}
 
 function doSendShortcut(command: string) {
   sendShortcut(command);

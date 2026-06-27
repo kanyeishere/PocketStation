@@ -227,19 +227,23 @@ function toggleStream() {
   }
 }
 
-watch(() => props.isActive, (active, _prev) => {
-  if (active && !props.running) {
-    // Auto-start stream when entering the tab
-    emit("start", fpsInput.value);
-  } else if (!active && props.running) {
-    // Auto-stop stream when leaving the tab
-    emit("stop");
-  }
+watch(
+  () => props.isActive,
+  (active, _prev) => {
+    if (active && !props.running) {
+      // Auto-start stream when entering the tab
+      emit("start", fpsInput.value);
+    } else if (!active && props.running) {
+      // Auto-stop stream when leaving the tab
+      emit("stop");
+    }
 
-  if (!active && isFullscreen.value) {
-    void exitFullscreenMode();
-  }
-});
+    if (!active && isFullscreen.value) {
+      void exitFullscreenMode();
+    }
+  },
+  { immediate: true }
+);
 
 watch(() => props.running, (running) => {
   if (!running && isFullscreen.value) {
