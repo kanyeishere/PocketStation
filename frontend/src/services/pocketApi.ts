@@ -1,4 +1,4 @@
-import type { Envelope } from "@/types";
+import type { CommandResult, Envelope } from "@/types";
 
 const tokenStorageKey = "pocket.station.token";
 
@@ -58,6 +58,15 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   });
 
   return readJsonResponse<T>(response);
+}
+
+export async function postCommand(path: string, body: unknown): Promise<CommandResult> {
+  const result = await postJson<CommandResult>(path, body);
+  if (!result.ok) {
+    throw new Error(result.message || "Command failed");
+  }
+
+  return result;
 }
 
 export function createEnvelope(type: string, payload: unknown = {}): Envelope {

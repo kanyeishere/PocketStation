@@ -1,8 +1,9 @@
 import { ref, shallowRef } from "vue";
+import { postCommand } from "@/services/pocketApi";
 
 type SendEnvelope = (type: string, payload?: unknown) => Promise<void>;
 
-export function useLiveStream(sendEnvelope: SendEnvelope) {
+export function useLiveStream(_sendEnvelope: SendEnvelope) {
   const liveFps = ref(30);
   const liveRunning = ref(false);
   const liveFrame = shallowRef<ImageBitmap | null>(null);
@@ -22,7 +23,7 @@ export function useLiveStream(sendEnvelope: SendEnvelope) {
   async function startStream(fps?: number) {
     const targetFps = fps ?? liveFps.value;
     try {
-      await sendEnvelope("cmd.startStream", { fps: targetFps });
+      await postCommand("/api/stream/start", { fps: targetFps });
       liveFps.value = targetFps;
       liveRunning.value = true;
     } catch (error) {
@@ -33,7 +34,7 @@ export function useLiveStream(sendEnvelope: SendEnvelope) {
 
   async function stopStream() {
     try {
-      await sendEnvelope("cmd.stopStream", {});
+      await postCommand("/api/stream/stop", {});
     } finally {
       liveRunning.value = false;
       liveFrame.value = null;
