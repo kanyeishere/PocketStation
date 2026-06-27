@@ -9,6 +9,14 @@ defineProps<{
   worldName?: string;
   dataCenterName?: string;
 }>();
+
+function hasWeeklyProgress(currency: CurrencyInfo) {
+  return typeof currency.weeklyAcquired === "number" && typeof currency.weeklyLimit === "number";
+}
+
+function formatNumber(value: number | null | undefined) {
+  return (value ?? 0).toLocaleString();
+}
 </script>
 
 <template>
@@ -28,7 +36,10 @@ defineProps<{
       class="currency-item"
     >
       <span class="currency-name">{{ c.name }}</span>
-      <span class="currency-count">{{ c.count.toLocaleString() }}</span>
+      <span class="currency-count">{{ formatNumber(c.count) }}</span>
+      <span v-if="hasWeeklyProgress(c)" class="currency-weekly">
+        本周 {{ formatNumber(c.weeklyAcquired) }}/{{ formatNumber(c.weeklyLimit) }}
+      </span>
     </div>
   </div>
 </template>

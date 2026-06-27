@@ -47,7 +47,9 @@ public sealed record CurrencyInfo(
     uint ItemId,
     string Name,
     uint Count,
-    string IconId);
+    string IconId,
+    uint? WeeklyAcquired = null,
+    uint? WeeklyLimit = null);
 
 public sealed record ScreenshotReadyEvent(
     string Url,

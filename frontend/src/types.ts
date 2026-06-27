@@ -74,6 +74,8 @@ export interface CurrencyInfo {
   name: string;
   count: number;
   iconId: string;
+  weeklyAcquired?: number | null;
+  weeklyLimit?: number | null;
 }
 
 export interface ScreenshotReadyEvent {
