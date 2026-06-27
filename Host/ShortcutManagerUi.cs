@@ -33,12 +33,13 @@ public static class ShortcutManagerUi
         ImGui.TextUnformatted("快捷指令");
         ImGui.Spacing();
 
-        if (!ImGui.BeginTable("ShortcutTable", 3,
+        if (!ImGui.BeginTable("ShortcutTable", 4,
                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable))
             return;
 
-        ImGui.TableSetupColumn("标签", ImGuiTableColumnFlags.WidthStretch, 0.35f);
-        ImGui.TableSetupColumn("指令", ImGuiTableColumnFlags.WidthStretch, 0.45f);
+        ImGui.TableSetupColumn("标签", ImGuiTableColumnFlags.WidthStretch, 0.30f);
+        ImGui.TableSetupColumn("指令", ImGuiTableColumnFlags.WidthStretch, 0.40f);
+        ImGui.TableSetupColumn("排序", ImGuiTableColumnFlags.WidthFixed, 60f);
         ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 120f);
         ImGui.TableHeadersRow();
 
@@ -74,8 +75,35 @@ public static class ShortcutManagerUi
                 ImGui.TextUnformatted(sc.Command);
             }
 
-            // ── Actions column ──
+            // ── Reorder column ──
             ImGui.TableSetColumnIndex(2);
+            // Move Up
+            if (i > 0)
+            {
+                if (ImGui.ArrowButton("##up", ImGuiDir.Up))
+                {
+                    (shortcuts[i - 1], shortcuts[i]) = (shortcuts[i], shortcuts[i - 1]);
+                    save();
+                    ImGui.PopID();
+                    break; // list mutated, exit loop
+                }
+            }
+
+            ImGui.SameLine();
+            // Move Down
+            if (i < shortcuts.Count - 1)
+            {
+                if (ImGui.ArrowButton("##dn", ImGuiDir.Down))
+                {
+                    (shortcuts[i + 1], shortcuts[i]) = (shortcuts[i], shortcuts[i + 1]);
+                    save();
+                    ImGui.PopID();
+                    break; // list mutated, exit loop
+                }
+            }
+
+            // ── Actions column ──
+            ImGui.TableSetColumnIndex(3);
             if (isEditing)
             {
                 if (ImGui.SmallButton("保存##save"))

@@ -9,6 +9,14 @@ public sealed class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
 
+    /// <summary>
+    /// Tracks which version of <see cref="CommandShortcutDefaults"/> has been merged.
+    /// When less than <see cref="CommandShortcutDefaults.CurrentVersion"/>,
+    /// <see cref="CommandShortcutDefaults.EnsureDefaults"/> will merge any new built-in
+    /// shortcuts the user doesn't already have.
+    /// </summary>
+    public int ShortcutDefaultsVersion { get; set; }
+
     public bool LanEnabled { get; set; } = true;
     public bool RequireToken { get; set; } = true;
     public int Port { get; set; } = 8787;

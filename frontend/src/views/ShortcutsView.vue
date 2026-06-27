@@ -47,6 +47,18 @@ function addShortcut() {
 function removeShortcut(index: number) {
   editList.value.splice(index, 1);
 }
+
+function moveUp(index: number) {
+  if (index <= 0) return;
+  const list = editList.value;
+  [list[index - 1], list[index]] = [list[index], list[index - 1]];
+}
+
+function moveDown(index: number) {
+  const list = editList.value;
+  if (index >= list.length - 1) return;
+  [list[index + 1], list[index]] = [list[index], list[index + 1]];
+}
 </script>
 
 <template>
@@ -78,6 +90,8 @@ function removeShortcut(index: number) {
         :key="s.id"
         class="shortcut-edit-row"
       >
+        <button type="button" class="btn-move" :disabled="i === 0" @click="moveUp(i)">▲</button>
+        <button type="button" class="btn-move" :disabled="i === editList.length - 1" @click="moveDown(i)">▼</button>
         <input v-model="s.label" placeholder="名称" class="edit-label">
         <input v-model="s.command" placeholder="指令" class="edit-cmd">
         <button type="button" class="btn-remove" @click="removeShortcut(i)">✕</button>
@@ -178,6 +192,27 @@ function removeShortcut(index: number) {
   color: #f99;
   cursor: pointer;
   font-size: 0.75rem;
+}
+
+.btn-move {
+  padding: 2px 6px;
+  border: 1px solid var(--border-color, #555);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dim, #888);
+  cursor: pointer;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.btn-move:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.btn-move:not(:disabled):hover {
+  background: var(--border-color, #555);
+  color: var(--text-color, #eee);
 }
 
 .btn-add {
