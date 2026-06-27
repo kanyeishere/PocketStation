@@ -27,6 +27,7 @@ public sealed class Configuration : IPluginConfiguration
     public int PlayerStateIntervalMs { get; set; } = 750;
     public int ScreenshotJpegQuality { get; set; } = 75;
     public int StreamFps { get; set; } = 30;
+    public string UiTheme { get; set; } = "velvet";
     public string SelectedChatModeId { get; set; } = ChatFilterDefaults.AllId;
     public List<ChatFilterMode> ChatFilterModes { get; set; } = [];
     public List<CommandShortcut> CommandShortcuts { get; set; } = [];
@@ -54,8 +55,14 @@ public sealed class Configuration : IPluginConfiguration
         if (StreamFps is < 1 or > 120)
             StreamFps = 30;
 
+        if (!IsValidUiTheme(UiTheme))
+            UiTheme = "velvet";
+
         ChatFilterDefaults.EnsureDefaults(this);
 
         CommandShortcutDefaults.EnsureDefaults(this);
     }
+
+    private static bool IsValidUiTheme(string? theme) =>
+        theme is "phantom" or "spotlight" or "velvet" or "neon" or "afterlife" or "braindance";
 }

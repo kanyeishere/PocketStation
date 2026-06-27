@@ -84,6 +84,7 @@ internal sealed class PocketStationRuntime : IDisposable
             new ScreenshotController(screenshotModule),
             new StreamController(configuration, webSocketHub, screenshotModule, SaveConfiguration),
             new ShortcutController(configuration, SaveConfiguration),
+            new SettingsController(configuration, SaveConfiguration),
             new DailyRoutinesController(dailyRoutines),
             new CommandController(commandDispatcher),
         };

@@ -19,8 +19,6 @@ defineProps<{
           {{ character.classJobName || `Job ${character.classJobId || 0}` }}
           Lv.{{ character.level || 0 }}
         </div>
-        <div>HP {{ character.currentHp || 0 }}/{{ character.maxHp || 0 }}</div>
-        <div>MP {{ character.currentMp || 0 }}/{{ character.maxMp || 0 }}</div>
         <div v-if="territoryName || worldName || dataCenterName">
           {{ dataCenterName || '?' }} / {{ worldName || '?' }} / {{ territoryName || '?' }}
         </div>

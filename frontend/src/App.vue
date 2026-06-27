@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import BottomTabs from "@/components/BottomTabs.vue";
 import TopBar from "@/components/TopBar.vue";
+import { useThemePreset } from "@/composables/useThemePreset";
 import { usePocketStation } from "@/composables/usePocketStation";
 import ChatView from "@/views/ChatView.vue";
 import LiveView from "@/views/LiveView.vue";
@@ -42,6 +43,7 @@ function routeForTab(tab: TabKey) {
 
 const activeTab = ref<TabKey>(tabFromLocation());
 const chatDraft = ref("");
+const { activePreset, activeTheme, themePresets } = useThemePreset();
 const {
   allChatTypes,
   chats,
@@ -130,8 +132,11 @@ function doSendShortcut(command: string) {
 <template>
   <main class="app">
     <TopBar
+      v-model:theme="activeTheme"
       :connection-mode="connectionMode"
       :connection-text="connectionText"
+      :theme-presets="themePresets"
+      :active-preset="activePreset"
       @refresh="loadInitial"
     />
 
