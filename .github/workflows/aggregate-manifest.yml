@@ -1,0 +1,50 @@
+name: Aggregate Manifest
+
+on:
+  repository_dispatch:
+    types: [aggregate-manifest]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Aggregate plugin manifests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Write-Host "=== Aggregating plugin manifests ==="
+          Write-Host "Triggered by: ${{ github.event.client_payload.plugin }} v${{ github.event.client_payload.version }}"
+
+          & ".github/scripts/aggregate-manifest.ps1" `
+            -PocketStationRepo "${{ github.repository }}" `
+            -PocketRecorderRepo "kanyeishere/PocketRecorder" `
+            -GithubToken "${{ github.token }}"
+
+      - name: Find latest release tag
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = gh release view --json tagName -q .tagName
+          Write-Host "Latest release tag: $tag"
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+
+      - name: Upload aggregated pluginmaster.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.release.outputs.tag }}"
+          Write-Host "Uploading pluginmaster.json to release $tag..."
+          gh release upload "$tag" "pluginmaster.json" --clobber
+          Write-Host "pluginmaster.json uploaded successfully."

@@ -105,7 +105,7 @@ jobs:
           if (-not (Test-Path "latest.zip")) { throw "latest.zip was not created!" }
           Write-Host "latest.zip created: $(Get-Item latest.zip | Select-Object Length)"
 
-      - name: Generate pluginmaster.json (release artifact)
+      - name: Generate pocketstation-entry.json (release artifact)
         run: |
           $version = "${{ steps.version.outputs.version }}"
           $repoUrl = "${{ github.server_url }}/${{ github.repository }}"
@@ -129,11 +129,11 @@ jobs:
             DownloadLinkUpdate     = $downloadUrl
           }
 
-          @($entry) | ConvertTo-Json -Depth 10 -AsArray | Set-Content "pluginmaster.json"
-          Write-Host "=== pluginmaster.json ==="
-          Get-Content "pluginmaster.json"
+          @($entry) | ConvertTo-Json -Depth 10 -AsArray | Set-Content "pocketstation-entry.json"
+          Write-Host "=== pocketstation-entry.json ==="
+          Get-Content "pocketstation-entry.json"
 
-          if (-not (Test-Path "pluginmaster.json")) { throw "pluginmaster.json was not created!" }
+          if (-not (Test-Path "pocketstation-entry.json")) { throw "pocketstation-entry.json was not created!" }
 
       - name: Create Release & Upload Assets
         env:
@@ -154,7 +154,22 @@ jobs:
           Write-Host "Uploading latest.zip..."
           gh release upload "$tag" "latest.zip" --clobber
 
-          Write-Host "Uploading pluginmaster.json..."
-          gh release upload "$tag" "pluginmaster.json" --clobber
+          Write-Host "Uploading pocketstation-entry.json..."
+          gh release upload "$tag" "pocketstation-entry.json" --clobber
 
           Write-Host "All assets uploaded successfully."
+
+      - name: Aggregate manifest (merge with PocketRecorder)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Write-Host "=== Running manifest aggregation ==="
+          & ".github/scripts/aggregate-manifest.ps1" `
+            -PocketStationRepo "${{ github.repository }}" `
+            -PocketRecorderRepo "kanyeishere/PocketRecorder" `
+            -GithubToken "${{ github.token }}"
+
+          Write-Host "Uploading aggregated pluginmaster.json..."
+          $tag = "${{ steps.version.outputs.tag }}"
+          gh release upload "$tag" "pluginmaster.json" --clobber
+          Write-Host "pluginmaster.json uploaded successfully."
