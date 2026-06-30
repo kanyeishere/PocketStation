@@ -1,44 +1,86 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Pocket Station">
   <defs>
-    <linearGradient id="bg" x1="82" y1="32" x2="430" y2="480" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#182128"/>
-      <stop offset="1" stop-color="#0A0F12"/>
+    <linearGradient id="phoneShell" x1="142" y1="54" x2="370" y2="458" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f2638"/>
+      <stop offset="0.5" stop-color="#081729"/>
+      <stop offset="1" stop-color="#030811"/>
     </linearGradient>
-    <linearGradient id="mark" x1="116" y1="150" x2="390" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#35C28F"/>
-      <stop offset="0.52" stop-color="#57D6D0"/>
-      <stop offset="1" stop-color="#4BA3FF"/>
+    <linearGradient id="screenGlow" x1="151" y1="91" x2="365" y2="421" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#12364c"/>
+      <stop offset="0.56" stop-color="#0b1f36"/>
+      <stop offset="1" stop-color="#07101f"/>
     </linearGradient>
-    <linearGradient id="shine" x1="104" y1="72" x2="408" y2="238" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.18"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    <linearGradient id="cyanStroke" x1="51" y1="46" x2="461" y2="466" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#19c9f0"/>
+      <stop offset="0.5" stop-color="#11e2bc"/>
+      <stop offset="1" stop-color="#149aff"/>
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    <linearGradient id="magentaStroke" x1="70" y1="70" x2="442" y2="442" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f025cf"/>
+      <stop offset="0.52" stop-color="#e313c5"/>
+      <stop offset="1" stop-color="#ff35d3"/>
+    </linearGradient>
+    <linearGradient id="letterGlow" x1="129" y1="156" x2="388" y2="338" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#23f2d5"/>
+      <stop offset="0.58" stop-color="#18dd9a"/>
+      <stop offset="1" stop-color="#21bdf4"/>
+    </linearGradient>
+    <filter id="softShadow" x="-18%" y="-18%" width="136%" height="144%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.36"/>
+    </filter>
+    <filter id="neonBloom" x="-24%" y="-24%" width="148%" height="148%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
-  <rect width="512" height="512" rx="104" fill="url(#bg)"/>
-  <rect x="9" y="9" width="494" height="494" rx="96" fill="none" stroke="#2C3841" stroke-opacity="0.72" stroke-width="6"/>
-  <path d="M104 76H408C419.046 76 428 84.9543 428 96V122C428 133.046 419.046 142 408 142H104C92.9543 142 84 133.046 84 122V96C84 84.9543 92.9543 76 104 76Z" fill="url(#shine)"/>
+  <g filter="url(#softShadow)">
+    <rect x="42" y="38" width="428" height="436" rx="118" fill="#07111f"/>
+    <rect x="47" y="43" width="418" height="426" rx="112" fill="none" stroke="url(#cyanStroke)" stroke-width="10"/>
+    <rect x="78" y="72" width="356" height="368" rx="92" fill="none" stroke="url(#magentaStroke)" stroke-width="9"/>
+  </g>
 
-  <g filter="url(#shadow)">
+  <g filter="url(#softShadow)">
+    <rect x="142" y="58" width="228" height="396" rx="46" fill="url(#phoneShell)"/>
+    <rect x="157" y="84" width="198" height="330" rx="27" fill="url(#screenGlow)"/>
+    <path d="M189 58H323V65C323 79.3594 311.359 91 297 91H215C200.641 91 189 79.3594 189 65V58Z" fill="#07111f"/>
+    <rect x="225" y="71" width="62" height="6" rx="3" fill="#1fe5cf" opacity="0.72"/>
+    <circle cx="255" cy="435" r="9" fill="#173148" stroke="#17d7ff" stroke-width="3" opacity="0.85"/>
+  </g>
+
+  <g opacity="0.42">
+    <path d="M162 128H350" stroke="#15cdf5" stroke-width="4" stroke-linecap="round"/>
+    <path d="M162 360H350" stroke="#e51fd0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M176 169H218M295 169H334" stroke="#18f0bd" stroke-width="6" stroke-linecap="round"/>
+    <path d="M178 382H218M295 382H334" stroke="#17cfff" stroke-width="6" stroke-linecap="round"/>
+    <path d="M174 119L338 404" stroke="#1cc7ff" stroke-width="3" stroke-linecap="round" opacity="0.42"/>
+    <path d="M338 119L174 404" stroke="#e424cf" stroke-width="3" stroke-linecap="round" opacity="0.34"/>
+  </g>
+
+  <g filter="url(#neonBloom)">
     <path
-      d="M143 382V165M143 203C159 169 214 156 251 184C293 216 292 288 249 321C215 347 164 338 143 304"
+      d="M165 343V174M165 202C179 177 217 165 250 181C282 197 293 235 277 266C261 297 222 310 188 294C178 289 170 283 165 276"
       fill="none"
-      stroke="url(#mark)"
-      stroke-width="54"
+      stroke="url(#letterGlow)"
+      stroke-width="46"
       stroke-linecap="round"
       stroke-linejoin="round"/>
     <path
-      d="M382 181C356 156 298 157 286 195C270 247 371 227 370 292C369 338 293 359 252 317"
+      d="M349 192C329 171 286 169 274 195C257 232 342 228 338 283C334 328 274 347 235 314"
       fill="none"
-      stroke="url(#mark)"
-      stroke-width="54"
+      stroke="url(#letterGlow)"
+      stroke-width="46"
       stroke-linecap="round"
       stroke-linejoin="round"/>
   </g>
 
-  <circle cx="372" cy="92" r="9" fill="#35C28F"/>
-  <circle cx="405" cy="92" r="9" fill="#4BA3FF"/>
+  <g opacity="0.95">
+    <path d="M114 130H164" stroke="#17d7ff" stroke-width="14" stroke-linecap="square"/>
+    <path d="M348 130H398" stroke="#e315c9" stroke-width="14" stroke-linecap="square"/>
+    <path d="M114 382H164" stroke="#e315c9" stroke-width="14" stroke-linecap="square"/>
+    <path d="M348 382H398" stroke="#17d7ff" stroke-width="14" stroke-linecap="square"/>
+  </g>
 </svg>
