@@ -26,6 +26,7 @@ internal sealed class PocketStationRuntime : IDisposable
     private readonly ScreenshotModule screenshotModule;
     private readonly LanWebServer webServer;
     private readonly PocketStationConfigWindow configWindow;
+    private readonly PocketStationFloatingWindow floatingWindow;
 
     private bool disposed;
 
@@ -108,10 +109,19 @@ internal sealed class PocketStationRuntime : IDisposable
             () => webServer.ClientCount,
             () => webServer.AccessUrls);
 
+        var webView2DataFolder = Path.Combine(configDirectory, "WebView2Data");
+        floatingWindow = new PocketStationFloatingWindow(
+            configuration,
+            SaveConfiguration,
+            OpenConfigUi,
+            () => $"http://127.0.0.1:{configuration.Port}/?token={Uri.EscapeDataString(configuration.Token)}",
+            webView2DataFolder);
+
         if (configuration.LanEnabled)
             webServer.Start();
 
         pluginInterface.UiBuilder.Draw += configWindow.Draw;
+        pluginInterface.UiBuilder.Draw += floatingWindow.Draw;
         pluginInterface.UiBuilder.OpenConfigUi += OpenConfigUi;
         pluginInterface.UiBuilder.OpenMainUi += OpenConfigUi;
 
@@ -135,9 +145,11 @@ internal sealed class PocketStationRuntime : IDisposable
         commandManager.RemoveHandler(CommandName);
         commandManager.RemoveHandler(ShortCommandName);
         pluginInterface.UiBuilder.Draw -= configWindow.Draw;
+        pluginInterface.UiBuilder.Draw -= floatingWindow.Draw;
         pluginInterface.UiBuilder.OpenConfigUi -= OpenConfigUi;
         pluginInterface.UiBuilder.OpenMainUi -= OpenConfigUi;
 
+        floatingWindow.Dispose();
         webServer.Dispose();
         moduleHost.Dispose();
         game.Dispose();
@@ -164,6 +176,17 @@ internal sealed class PocketStationRuntime : IDisposable
         if (trimmed.Equals("sendtest", StringComparison.OrdinalIgnoreCase))
         {
             _ = game.SendChatOrCommandAsync("/e [Pocket Station] send test");
+            return;
+        }
+
+        if (trimmed.Equals("floating", StringComparison.OrdinalIgnoreCase) ||
+            trimmed.Equals("float", StringComparison.OrdinalIgnoreCase) ||
+            trimmed.Equals("icon", StringComparison.OrdinalIgnoreCase))
+        {
+            configuration.ShowFloatingButton = !configuration.ShowFloatingButton;
+            SaveConfiguration();
+            DService.Instance().Chat.Print(
+                $"[Pocket Station] 悬浮按钮已{(configuration.ShowFloatingButton ? "显示" : "隐藏")}。");
             return;
         }
 

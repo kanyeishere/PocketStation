@@ -1,86 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Pocket Station">
   <defs>
-    <linearGradient id="phoneShell" x1="142" y1="54" x2="370" y2="458" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0f2638"/>
-      <stop offset="0.5" stop-color="#081729"/>
-      <stop offset="1" stop-color="#030811"/>
+    <clipPath id="targetClip">
+      <rect x="40" y="32" width="457" height="465" rx="118"/>
+    </clipPath>
+    <linearGradient id="shell" x1="40" y1="32" x2="496" y2="496" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#061222"/>
+      <stop offset="0.58" stop-color="#040914"/>
+      <stop offset="1" stop-color="#02050c"/>
     </linearGradient>
-    <linearGradient id="screenGlow" x1="151" y1="91" x2="365" y2="421" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#12364c"/>
-      <stop offset="0.56" stop-color="#0b1f36"/>
-      <stop offset="1" stop-color="#07101f"/>
+    <linearGradient id="panel" x1="118" y1="116" x2="394" y2="392" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b2538"/>
+      <stop offset="1" stop-color="#06101e"/>
     </linearGradient>
-    <linearGradient id="cyanStroke" x1="51" y1="46" x2="461" y2="466" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#19c9f0"/>
-      <stop offset="0.5" stop-color="#11e2bc"/>
-      <stop offset="1" stop-color="#149aff"/>
+    <linearGradient id="phone" x1="132" y1="62" x2="380" y2="444" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#102a3e"/>
+      <stop offset="0.55" stop-color="#08182b"/>
+      <stop offset="1" stop-color="#040a15"/>
     </linearGradient>
-    <linearGradient id="magentaStroke" x1="70" y1="70" x2="442" y2="442" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f025cf"/>
-      <stop offset="0.52" stop-color="#e313c5"/>
-      <stop offset="1" stop-color="#ff35d3"/>
+    <linearGradient id="screen" x1="154" y1="106" x2="358" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#11364c"/>
+      <stop offset="0.58" stop-color="#0b1d32"/>
+      <stop offset="1" stop-color="#06101f"/>
     </linearGradient>
-    <linearGradient id="letterGlow" x1="129" y1="156" x2="388" y2="338" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#23f2d5"/>
-      <stop offset="0.58" stop-color="#18dd9a"/>
-      <stop offset="1" stop-color="#21bdf4"/>
+    <linearGradient id="cyan" x1="40" y1="32" x2="496" y2="496" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#18d9ff"/>
+      <stop offset="0.55" stop-color="#22f0c8"/>
+      <stop offset="1" stop-color="#139cff"/>
     </linearGradient>
-    <filter id="softShadow" x="-18%" y="-18%" width="136%" height="144%">
-      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.36"/>
-    </filter>
-    <filter id="neonBloom" x="-24%" y="-24%" width="148%" height="148%">
+    <linearGradient id="magenta" x1="76" y1="68" x2="440" y2="436" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f024d6"/>
+      <stop offset="1" stop-color="#e716c7"/>
+    </linearGradient>
+    <linearGradient id="letter" x1="148" y1="176" x2="366" y2="326" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#25f6dc"/>
+      <stop offset="0.58" stop-color="#18e49c"/>
+      <stop offset="1" stop-color="#22c4f4"/>
+    </linearGradient>
+    <filter id="letterGlow" x="-24%" y="-24%" width="148%" height="148%">
       <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.08 0 0 0 0 0.95 0 0 0 0 0.72 0 0 0 0.72 0" result="coloredBlur"/>
       <feMerge>
-        <feMergeNode in="blur"/>
+        <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
 
-  <g filter="url(#softShadow)">
-    <rect x="42" y="38" width="428" height="436" rx="118" fill="#07111f"/>
-    <rect x="47" y="43" width="418" height="426" rx="112" fill="none" stroke="url(#cyanStroke)" stroke-width="10"/>
-    <rect x="78" y="72" width="356" height="368" rx="92" fill="none" stroke="url(#magentaStroke)" stroke-width="9"/>
-  </g>
+  <g clip-path="url(#targetClip)">
+    <rect x="40" y="32" width="456" height="464" rx="118" fill="url(#shell)"/>
+    <rect x="45.5" y="37.5" width="445" height="453" rx="112" fill="none" stroke="url(#cyan)" stroke-width="11"/>
+    <rect x="76.5" y="68.5" width="383" height="391" rx="92" fill="none" stroke="url(#magenta)" stroke-width="10" opacity="0.86"/>
 
-  <g filter="url(#softShadow)">
-    <rect x="142" y="58" width="228" height="396" rx="46" fill="url(#phoneShell)"/>
-    <rect x="157" y="84" width="198" height="330" rx="27" fill="url(#screenGlow)"/>
-    <path d="M189 58H323V65C323 79.3594 311.359 91 297 91H215C200.641 91 189 79.3594 189 65V58Z" fill="#07111f"/>
-    <rect x="225" y="71" width="62" height="6" rx="3" fill="#1fe5cf" opacity="0.72"/>
-    <circle cx="255" cy="435" r="9" fill="#173148" stroke="#17d7ff" stroke-width="3" opacity="0.85"/>
-  </g>
+    <rect x="118" y="116" width="276" height="276" rx="54" fill="url(#panel)" opacity="0.96"/>
+    <path d="M128 116H186M326 116H384M128 394H186M326 394H384" stroke="#16d4ff" stroke-width="13" stroke-linecap="square" opacity="0.95"/>
+    <path d="M326 116H384M128 394H186" stroke="#e719ca" stroke-width="13" stroke-linecap="square" opacity="0.95"/>
+    <path d="M164 104L336 408" stroke="#16d4ff" stroke-width="4" stroke-linecap="round" opacity="0.58"/>
+    <path d="M350 112L176 408" stroke="#e719ca" stroke-width="4" stroke-linecap="round" opacity="0.48"/>
 
-  <g opacity="0.42">
-    <path d="M162 128H350" stroke="#15cdf5" stroke-width="4" stroke-linecap="round"/>
-    <path d="M162 360H350" stroke="#e51fd0" stroke-width="4" stroke-linecap="round"/>
-    <path d="M176 169H218M295 169H334" stroke="#18f0bd" stroke-width="6" stroke-linecap="round"/>
-    <path d="M178 382H218M295 382H334" stroke="#17cfff" stroke-width="6" stroke-linecap="round"/>
-    <path d="M174 119L338 404" stroke="#1cc7ff" stroke-width="3" stroke-linecap="round" opacity="0.42"/>
-    <path d="M338 119L174 404" stroke="#e424cf" stroke-width="3" stroke-linecap="round" opacity="0.34"/>
-  </g>
+    <rect x="132" y="62" width="248" height="392" rx="48" fill="url(#phone)"/>
+    <rect x="151" y="101" width="210" height="310" rx="30" fill="url(#screen)" stroke="#12324a" stroke-width="2.5"/>
+    <path d="M188 62H324V70C324 85.464 311.464 98 296 98H216C200.536 98 188 85.464 188 70V62Z" fill="#07111f"/>
+    <rect x="224" y="78" width="64" height="7" rx="3.5" fill="#20e3d0" opacity="0.78"/>
+    <circle cx="256" cy="433" r="9" fill="#10273b" stroke="#18d9ff" stroke-width="3.5" opacity="0.9"/>
 
-  <g filter="url(#neonBloom)">
-    <path
-      d="M165 343V174M165 202C179 177 217 165 250 181C282 197 293 235 277 266C261 297 222 310 188 294C178 289 170 283 165 276"
-      fill="none"
-      stroke="url(#letterGlow)"
-      stroke-width="46"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-    <path
-      d="M349 192C329 171 286 169 274 195C257 232 342 228 338 283C334 328 274 347 235 314"
-      fill="none"
-      stroke="url(#letterGlow)"
-      stroke-width="46"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-  </g>
+    <path d="M170 145H222M292 145H342M170 368H222M292 368H342" stroke="#18d9ff" stroke-width="9" stroke-linecap="square" opacity="0.84"/>
+    <path d="M292 145H342M170 368H222" stroke="#e719ca" stroke-width="9" stroke-linecap="square" opacity="0.9"/>
+    <path d="M180 175L332 350" stroke="#18d9ff" stroke-width="3.5" stroke-linecap="round" opacity="0.38"/>
+    <path d="M332 175L180 350" stroke="#e719ca" stroke-width="3.5" stroke-linecap="round" opacity="0.36"/>
 
-  <g opacity="0.95">
-    <path d="M114 130H164" stroke="#17d7ff" stroke-width="14" stroke-linecap="square"/>
-    <path d="M348 130H398" stroke="#e315c9" stroke-width="14" stroke-linecap="square"/>
-    <path d="M114 382H164" stroke="#e315c9" stroke-width="14" stroke-linecap="square"/>
-    <path d="M348 382H398" stroke="#17d7ff" stroke-width="14" stroke-linecap="square"/>
+    <g filter="url(#letterGlow)">
+      <text x="256" y="305" text-anchor="middle"
+            font-family="Arial Black, Arial, sans-serif" font-size="136"
+            font-weight="900" letter-spacing="-5"
+            fill="url(#letter)">PS</text>
+    </g>
   </g>
 </svg>

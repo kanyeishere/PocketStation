@@ -28,6 +28,35 @@ function displayName(mod: DailyRoutinesModule) {
   return mod.displayName || mod.name;
 }
 
+function isUpperAscii(char: string) {
+  return char >= "A" && char <= "Z";
+}
+
+function isLowerOrDigitAscii(char: string) {
+  return (char >= "a" && char <= "z") || (char >= "0" && char <= "9");
+}
+
+function camelCaseSegments(value: string) {
+  const segments: string[] = [];
+  let start = 0;
+
+  for (let i = 1; i < value.length; i += 1) {
+    const prev = value[i - 1];
+    const curr = value[i];
+    const next = value[i + 1] ?? "";
+    const breaksAfterLowerOrDigit = isLowerOrDigitAscii(prev) && isUpperAscii(curr);
+    const breaksBeforeWordAfterAcronym = isUpperAscii(prev) && isUpperAscii(curr) && isLowerOrDigitAscii(next);
+
+    if (breaksAfterLowerOrDigit || breaksBeforeWordAfterAcronym) {
+      segments.push(value.slice(start, i));
+      start = i;
+    }
+  }
+
+  segments.push(value.slice(start));
+  return segments;
+}
+
 function doConfirm(mod: DailyRoutinesModule) {
   confirming.value = {
     name: mod.name,
@@ -68,9 +97,14 @@ function doToggle() {
           :key="mod.name"
           class="plugin-item"
         >
-          <div class="plugin-info">
+          <div class="plugin-info daily-routine-info">
             <span class="plugin-name">{{ displayName(mod) }}</span>
-            <span class="plugin-version">{{ mod.name }}</span>
+            <span class="plugin-version daily-routine-module-id">
+              <template
+                v-for="(segment, index) in camelCaseSegments(mod.name)"
+                :key="`${mod.name}-${index}`"
+              ><wbr v-if="index > 0" />{{ segment }}</template>
+            </span>
           </div>
           <div class="plugin-actions">
             <span v-if="mod.enabled" class="badge badge-on">已启用</span>

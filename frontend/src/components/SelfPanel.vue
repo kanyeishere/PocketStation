@@ -20,7 +20,6 @@ function formatNumber(value: number | null | undefined) {
 </script>
 
 <template>
-  <div class="section-title">自身</div>
   <CharacterPanel
     :character="character"
     empty-text="未登录"

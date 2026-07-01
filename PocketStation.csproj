@@ -52,11 +52,13 @@
   <ItemGroup>
     <None Update="PocketStation.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="floating-icon.png" CopyToOutputDirectory="PreserveNewest" />
     <None Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.864.35" />
   </ItemGroup>
 
   <!-- Copy OmenTools transitive dependencies (not covered by CopyLocalLockFileAssemblies=false) -->
@@ -75,6 +77,17 @@
   <Target Name="CopyQRCoder" AfterTargets="Build">
     <Copy SourceFiles="$(NuGetPackageRoot)qrcoder\1.6.0\lib\net6.0\QRCoder.dll"
           DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Copy WebView2 managed DLLs (CopyLocalLockFileAssemblies=false prevents automatic copy) -->
+  <Target Name="CopyWebView2" AfterTargets="Build">
+    <ItemGroup>
+      <_WebView2Managed Include="$(NuGetPackageRoot)microsoft.web.webview2\1.0.864.35\lib\netcoreapp3.0\Microsoft.Web.WebView2.Core.dll" />
+      <_WebView2Managed Include="$(NuGetPackageRoot)microsoft.web.webview2\1.0.864.35\lib\netcoreapp3.0\Microsoft.Web.WebView2.WinForms.dll" />
+      <_WebView2Native Include="$(NuGetPackageRoot)microsoft.web.webview2\1.0.864.35\runtimes\win-x64\native\WebView2Loader.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_WebView2Managed)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_WebView2Native)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

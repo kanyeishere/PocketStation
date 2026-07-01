@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dalamud.Configuration;
 using PocketStation;
 using PocketStation.Domain;
@@ -27,6 +28,10 @@ public sealed class Configuration : IPluginConfiguration
     public int PlayerStateIntervalMs { get; set; } = 750;
     public int ScreenshotJpegQuality { get; set; } = 75;
     public int StreamFps { get; set; } = 30;
+    public bool ShowFloatingButton { get; set; } = true;
+    public Vector2 FloatingButtonPosition { get; set; } = new(48f, 180f);
+    public bool HasFloatingButtonPosition { get; set; }
+
     public string UiTheme { get; set; } = "velvet";
     public string SelectedChatModeId { get; set; } = ChatFilterDefaults.AllId;
     public List<ChatFilterMode> ChatFilterModes { get; set; } = [];
