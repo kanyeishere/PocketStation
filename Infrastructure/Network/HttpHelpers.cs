@@ -128,6 +128,10 @@ public static class HttpHelpers
             ".png" => "image/png",
             ".jpg" or ".jpeg" => "image/jpeg",
             ".svg" => "image/svg+xml",
+            ".woff2" => "font/woff2",
+            ".woff" => "font/woff",
+            ".ttf" => "font/ttf",
+            ".otf" => "font/otf",
             _ => "application/octet-stream"
         };
     }

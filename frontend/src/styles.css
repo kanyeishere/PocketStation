@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "FFXIV Lodestone SSF";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("/fonts/FFXIV_Lodestone_SSF.woff") format("woff");
+  unicode-range: U+E020-E0DB;
+}
+
 :root {
   color-scheme: dark;
   --bg: #0b0b0b;
@@ -26,7 +35,7 @@
   --text-color: var(--input-text);
   --text-dim: var(--muted);
   --radius: 8px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "FFXIV Lodestone SSF", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 :root[data-theme="spotlight"] {
